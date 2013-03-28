@@ -98,10 +98,7 @@ void MainWindow::connected()
     //_name = ui->leName->text();
     out.device()->seek(0);
     out << (quint16)(block.size() - sizeof(quint16));
-    qDebug() << "Block size" <<block.size() << ", size=" <<sizeof(quint16)<< ", raznica"<<(quint16)(block.size() - sizeof(quint16));
     socket->write(block);
-    qDebug() << " com authorization="<<(quint8)MainWindow::comAuthorization;;
-
     // Flip over to the chat page:
     stackedWidget->setCurrentWidget(chatPage);
 
