@@ -76,7 +76,7 @@ void MainWindow::readyRead()
         case comAuthorization:
         {
             //ui->pbSend->setEnabled(true);
-            //AddToLog("Enter as "+_name,Qt::green);
+            //AddToLog("Enter as "+_name,Qt::green);d
         }
         break;
 
