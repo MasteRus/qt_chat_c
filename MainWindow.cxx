@@ -12,6 +12,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
         ipAddress = QHostAddress(QHostAddress::LocalHost).toString();
 
     setupUi(this);
+    blocksize=0;
     //ui->setupUi(this);
     //stackedWidget->setCurrentWidget(loginPage);
     //Wi
@@ -55,8 +56,11 @@ void MainWindow::on_sayButton_clicked()
 // This function gets called whenever the chat server has sent us some text:
 void MainWindow::readyRead()
 {
+    qDebug() <<"Ready Read start";
+    qDebug() << "blocksize now " << blocksize<<", "<<socket->bytesAvailable();
     QDataStream in(socket);
     if (blocksize == 0) {
+        if (socket->bytesAvailable() < (int)sizeof(quint16))
             return;
         in >> blocksize;
         qDebug() << "blocksize now " << blocksize;
@@ -73,8 +77,9 @@ void MainWindow::readyRead()
 
     switch (command)
     {
-        case comAuthorization:
+        case comAuthorizationSuccess:
         {
+            stackedWidget->setCurrentWidget(chatPage);
             //ui->pbSend->setEnabled(true);
             //AddToLog("Enter as "+_name,Qt::green);d
         }
@@ -93,15 +98,15 @@ void MainWindow::connected()
     QDataStream out(&block, QIODevice::WriteOnly);
     out << (quint16)0;
     out << (quint8)MainWindow::comAuthorization;
-    //out << ui->leName->text();
     out << userLineEdit->text();
-    //_name = ui->leName->text();
+
     out.device()->seek(0);
     out << (quint16)(block.size() - sizeof(quint16));
     socket->write(block);
+    qDebug() <<"Block sended!"<< block;
     // Flip over to the chat page:
-    stackedWidget->setCurrentWidget(chatPage);
+
 
     // And send our username to the chat server.
-    socket->write(QString("/me:" + userLineEdit->text() + "\n").toUtf8());
+    //socket->write(QString("/me:" + userLineEdit->text() + "\n").toUtf8());
 }
