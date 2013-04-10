@@ -23,10 +23,15 @@ class MainWindow : public QMainWindow, public Ui::MainWindow
         MainWindow(QWidget *parent=0);
         static const quint8 comAuthorization = 1;
         static const quint8 comAuthorizationSuccess = 2;
-        /*
-        static const quint8 comUsersOnline = 2;
+
         static const quint8 comUserJoin = 3;
         static const quint8 comUserLeft = 4;
+        static const quint8 comUsersOnline = 5;
+
+
+        static const quint8 comMessageToAll = 6;
+        static const quint8 comMessageToUsers = 7;
+        /*
         static const quint8 comMessageToAll = 5;
         static const quint8 comMessageToUsers = 6;
         static const quint8 comPublicServerMessage = 7;

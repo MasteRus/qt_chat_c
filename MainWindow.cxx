@@ -80,6 +80,17 @@ void MainWindow::readyRead()
         case comAuthorizationSuccess:
         {
             stackedWidget->setCurrentWidget(chatPage);
+            roomTextEdit->append("<b>" + userLineEdit->text() + "</b>: Connected succsessful");
+            //ui->pbSend->setEnabled(true);
+            //AddToLog("Enter as "+_name,Qt::green);d
+        }
+        break;
+
+        case comUserJoin:
+        {
+            QString name;
+            in >> name;
+            roomTextEdit->append("<b>" + name + "</b>: Connected to our chat");
             //ui->pbSend->setEnabled(true);
             //AddToLog("Enter as "+_name,Qt::green);d
         }
