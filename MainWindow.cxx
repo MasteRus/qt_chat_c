@@ -2,6 +2,7 @@
 
 // We'll need some regular expression magic in this code:
 #include <QRegExp>
+#include <QRegExp>
 
 // This is our MainWindow constructor (you C++ n00b)
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
@@ -79,6 +80,7 @@ void MainWindow::readyRead()
     {
         case comAuthorizationSuccess:
         {
+            qDebug() << "Received command comAuthorizationSuccess" ;
             stackedWidget->setCurrentWidget(chatPage);
             roomTextEdit->append("<b>" + userLineEdit->text() + "</b>: Connected succsessful");
             //ui->pbSend->setEnabled(true);
@@ -88,13 +90,36 @@ void MainWindow::readyRead()
 
         case comUserJoin:
         {
+            qDebug() << "comUserJoin" ;
             QString name;
             in >> name;
             roomTextEdit->append("<b>" + name + "</b>: Connected to our chat");
+            QStringList tmp;
+            tmp.push_back(name);
+            userListWidget->addItems(tmp);
+            //new QListWidgetItem(NULL, name, userListWidget);
+
             //ui->pbSend->setEnabled(true);
             //AddToLog("Enter as "+_name,Qt::green);d
         }
         break;
+
+    case comUsersOnline:
+        {
+            qDebug() << "comUsersOnline" ;
+            QString names;
+            in >> names;
+            userListWidget->clear();
+            QStringList temp=names.split("|");
+            userListWidget->addItems(temp);
+            /*
+
+            foreach(QString user, temp)
+                new QListWidgetItem(NULL, user, userListWidget);
+                */
+        }
+        break;
+
 
     }// We'll loop over every (complete) line of text that the server has sent us:
 
