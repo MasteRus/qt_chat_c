@@ -58,70 +58,76 @@ void MainWindow::on_sayButton_clicked()
 void MainWindow::readyRead()
 {
     qDebug() <<"Ready Read start";
-    qDebug() << "blocksize now " << blocksize<<", "<<socket->bytesAvailable();
-    QDataStream in(socket);
-    if (blocksize == 0) {
-        if (socket->bytesAvailable() < (int)sizeof(quint16))
-            return;
-        in >> blocksize;
-        qDebug() << "blocksize now " << blocksize;
-
-    }
-    if (socket->bytesAvailable() < blocksize)
-        return;
-    else
-        blocksize = 0;
-
-    quint8 command;
-    in >> command;
-    qDebug() << "Received command " << command;
-
-    switch (command)
+    while (socket->bytesAvailable() >0)
     {
-        case comAuthorizationSuccess:
-        {
-            qDebug() << "Received command comAuthorizationSuccess" ;
-            stackedWidget->setCurrentWidget(chatPage);
-            roomTextEdit->append("<b>" + userLineEdit->text() + "</b>: Connected succsessful");
-            //ui->pbSend->setEnabled(true);
-            //AddToLog("Enter as "+_name,Qt::green);d
+        qDebug() << "blocksize now " << blocksize<<", "<<socket->bytesAvailable();
+
+        QDataStream in(socket);
+        if (blocksize == 0) {
+            if (socket->bytesAvailable() < (int)sizeof(quint16))
+                return;
+            in >> blocksize;
+            qDebug() << "blocksize now " << blocksize;
+
         }
-        break;
+        if (socket->bytesAvailable() < blocksize)
+            return;
+        else
+            blocksize = 0;
 
-        case comUserJoin:
+        quint8 command;
+        in >> command;
+        qDebug() << "Received command " << command;
+
+        switch (command)
         {
-            qDebug() << "comUserJoin" ;
-            QString name;
-            in >> name;
-            roomTextEdit->append("<b>" + name + "</b>: Connected to our chat");
-            QStringList tmp;
-            tmp.push_back(name);
-            userListWidget->addItems(tmp);
-            //new QListWidgetItem(NULL, name, userListWidget);
+            case comAuthorizationSuccess:
+            {
+                qDebug() << "Received command comAuthorizationSuccess" ;
+                stackedWidget->setCurrentWidget(chatPage);
+                roomTextEdit->append("<b>" + userLineEdit->text() + "</b>: Connected succsessful");
+                //ui->pbSend->setEnabled(true);
+                //AddToLog("Enter as "+_name,Qt::green);d
 
-            //ui->pbSend->setEnabled(true);
-            //AddToLog("Enter as "+_name,Qt::green);d
+            }
+            break;
+
+            case comUserJoin:
+            {
+                qDebug() << "comUserJoin" ;
+                QString name;
+                in >> name;
+                roomTextEdit->append("<b>" + name + "</b>: Connected to our chat");
+                QStringList tmp;
+                tmp.push_back(name);
+                userListWidget->addItems(tmp);
+                //new QListWidgetItem(NULL, name, userListWidget);
+
+                //ui->pbSend->setEnabled(true);
+                //AddToLog("Enter as "+_name,Qt::green);d
+            }
+            break;
+
+            case comUsersOnline:
+            {
+                qDebug() << "comUsersOnline" ;
+                QString names;
+                in >> names;
+                userListWidget->clear();
+                QStringList temp=names.split("|");
+                userListWidget->addItems(temp);
+                /*
+
+                foreach(QString user, temp)
+                    new QListWidgetItem(NULL, user, userListWidget);
+                    */
+            }
+            break;
+
+
         }
-        break;
-
-    case comUsersOnline:
-        {
-            qDebug() << "comUsersOnline" ;
-            QString names;
-            in >> names;
-            userListWidget->clear();
-            QStringList temp=names.split("|");
-            userListWidget->addItems(temp);
-            /*
-
-            foreach(QString user, temp)
-                new QListWidgetItem(NULL, user, userListWidget);
-                */
-        }
-        break;
-
-
-    }// We'll loop over every (complete) line of text that the server has sent us:
+    qDebug() << "Command ended, bytes avaliable" <<socket->bytesAvailable();
+    }
 
 }
 
