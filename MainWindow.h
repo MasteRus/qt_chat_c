@@ -28,24 +28,17 @@ class MainWindow : public QMainWindow, public Ui::MainWindow
         static const quint8 comUserLeft = 4;
         static const quint8 comUsersOnline = 5;
 
-
         static const quint8 comMessageToAll = 6;
         static const quint8 comMessageToUsers = 7;
-        /*
-        static const quint8 comMessageToAll = 5;
-        static const quint8 comMessageToUsers = 6;
-        static const quint8 comPublicServerMessage = 7;
-        static const quint8 comPrivateServerMessage = 8;
-        */
+
         static const quint8 comErrNameInvalid = 201;
         static const quint8 comErrNameUsed = 202;
 
     private slots:
 
         void on_loginButton_clicked();
-        /*
         void on_sayButton_clicked();
-        */
+
         // This is a function we'll connect to a socket's readyRead()
         // signal, which tells us there's text to be read from the chat
         // server.
@@ -53,8 +46,16 @@ class MainWindow : public QMainWindow, public Ui::MainWindow
         void connected();
 
     private:
-
         // This is the socket that will let us communitate with the server.
         QTcpSocket *socket;
         quint16 blocksize;
+    protected:
+
+        QByteArray CreateDatagramm(quint8 comm,QString message) const;
+        QByteArray CreateDatagramm(quint8 comm) const;
+
+        void doSendCommand(quint8 comm, QTcpSocket *client,QString message) const;
+        void doSendCommand(quint8 comm, QTcpSocket *client) const;
+
+
 };

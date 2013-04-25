@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
+    <width>859</width>
     <height>600</height>
    </rect>
   </property>
@@ -72,9 +72,6 @@ border-radius: 25px;
            <item row="0" column="2" colspan="2">
             <widget class="QListWidget" name="userListWidget"/>
            </item>
-           <item row="1" column="0" colspan="3">
-            <widget class="QLineEdit" name="sayLineEdit"/>
-           </item>
            <item row="1" column="3">
             <widget class="QPushButton" name="sayButton">
              <property name="sizePolicy">
@@ -98,6 +95,16 @@ border-radius: 25px;
             <widget class="QTextEdit" name="roomTextEdit">
              <property name="readOnly">
               <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0" colspan="2">
+            <widget class="QLineEdit" name="sayLineEdit"/>
+           </item>
+           <item row="1" column="2">
+            <widget class="QCheckBox" name="privateMsgBox">
+             <property name="text">
+              <string>PrivateMsg</string>
              </property>
             </widget>
            </item>

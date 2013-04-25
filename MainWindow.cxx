@@ -4,6 +4,38 @@
 #include <QRegExp>
 #include <QRegExp>
 
+QByteArray MainWindow::CreateDatagramm(quint8 comm,QString message) const
+{
+    QByteArray block;
+    QDataStream out(&block, QIODevice::WriteOnly);
+    out << (quint16)0;
+    out << comm;
+    out << message;
+    out.device()->seek(0);
+    out << (quint16)(block.size() - sizeof(quint16));
+    return block;
+}
+QByteArray MainWindow::CreateDatagramm(quint8 comm) const
+{
+    QByteArray block;
+    QDataStream out(&block, QIODevice::WriteOnly);
+    out << (quint16)0;
+    out << comm;
+    out.device()->seek(0);
+    out << (quint16)(block.size() - sizeof(quint16));
+    return block;
+}
+
+void MainWindow::doSendCommand(quint8 comm, QTcpSocket *client, QString message) const
+{
+    QByteArray block=CreateDatagramm(comm,message);
+    client->write(block);
+}
+void MainWindow::doSendCommand(quint8 comm, QTcpSocket *client) const
+{
+
+}
+
 // This is our MainWindow constructor (you C++ n00b)
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
@@ -16,9 +48,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     blocksize=0;
     //ui->setupUi(this);
     //stackedWidget->setCurrentWidget(loginPage);
-    //Wi
-
-
     //ui->PortLineEdit->setValidator(new QIntValidator(1, 65535, this));
     //ui->PortLineEdit->setText("32023");
 
@@ -30,9 +59,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     // yet until the user clicks the loginButton:
     socket = new QTcpSocket(this);
 
-    // This is how we tell Qt to call our readyRead() and connected()
-    // functions when the socket has text ready to be read, and is done
-    // connecting to the server (respectively):
     connect(socket, SIGNAL(readyRead()), this, SLOT(readyRead()));
     connect(socket, SIGNAL(connected()), this, SLOT(connected()));
 }
@@ -42,18 +68,35 @@ void MainWindow::on_loginButton_clicked()
 {
     socket->connectToHost(serverLineEdit->text(), 32023);
 }
-/*
+
 void MainWindow::on_sayButton_clicked()
 {
-    QString message = sayLineEdit->text().trimmed();
+    QByteArray block;
+    QString message = sayLineEdit->text();
     if(!message.isEmpty())
     {
-        socket->write(QString(message + "\n").toUtf8());
+        if (privateMsgBox->isChecked())
+        {
+            QString s;
+            foreach (QListWidgetItem *i, userListWidget->selectedItems())
+                s += i->text()+"|";
+            s.remove(s.length()-1, 1);
+            qDebug() << "List of users: " << s;
+            block=CreateDatagramm(comMessageToUsers,s+":"+message);
+        }
+        else
+        {
+            block=CreateDatagramm(comMessageToAll,message);
+        }
+        socket->write(block);
     }
     sayLineEdit->clear();
     sayLineEdit->setFocus();
+    //out << ui->pteMessage->document()->toPlainText();
+
+
 }
-*/
+
 // This function gets called whenever the chat server has sent us some text:
 void MainWindow::readyRead()
 {
@@ -121,6 +164,25 @@ void MainWindow::readyRead()
                 foreach(QString user, temp)
                     new QListWidgetItem(NULL, user, userListWidget);
                     */
+            }
+            break;
+
+            case comMessageToAll:
+            {
+                QString message;
+                //QString username=users[client];
+                in >> message;
+                roomTextEdit->append(message);
+                //doSendMessageToAll(username+":"+message);
+            }
+            break;
+
+            case comMessageToUsers:
+            {
+                QString message;
+                //QString username=users[client];
+                in >> message;
+                roomTextEdit->append(message);
             }
             break;
 
