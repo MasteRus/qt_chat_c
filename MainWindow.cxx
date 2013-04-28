@@ -1,9 +1,5 @@
 #include "MainWindow.h"
 
-// We'll need some regular expression magic in this code:
-#include <QRegExp>
-#include <QRegExp>
-
 QByteArray MainWindow::CreateDatagramm(quint8 comm,QString message) const
 {
     QByteArray block;
@@ -36,7 +32,6 @@ void MainWindow::doSendCommand(quint8 comm, QTcpSocket *client) const
 
 }
 
-// This is our MainWindow constructor (you C++ n00b)
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
     QString ipAddress;
@@ -55,8 +50,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     stackedWidget->setCurrentWidget(loginPage);
     serverLineEdit->setText(ipAddress);
 
-    // Instantiate our socket (but don't actually connect to anything
-    // yet until the user clicks the loginButton:
     socket = new QTcpSocket(this);
 
     connect(socket, SIGNAL(readyRead()), this, SLOT(readyRead()));
@@ -144,10 +137,19 @@ void MainWindow::readyRead()
                 QStringList tmp;
                 tmp.push_back(name);
                 userListWidget->addItems(tmp);
-                //new QListWidgetItem(NULL, name, userListWidget);
+            }
+            break;
 
-                //ui->pbSend->setEnabled(true);
-                //AddToLog("Enter as "+_name,Qt::green);d
+            case comUserLeft:
+            {
+                qDebug() << "comUserLeft" ;
+                QString name;
+                in >> name;
+                roomTextEdit->append("<b>" + name + "</b> was left from our chat");
+                QList<QListWidgetItem*> templist=userListWidget->findItems(name,Qt::MatchFixedString);
+                if (templist.count()==1)
+                    userListWidget->takeItem(userListWidget->row(templist.last()));
+                else qDebug() << "NOT = 1";
             }
             break;
 
@@ -159,34 +161,24 @@ void MainWindow::readyRead()
                 userListWidget->clear();
                 QStringList temp=names.split("|");
                 userListWidget->addItems(temp);
-                /*
-
-                foreach(QString user, temp)
-                    new QListWidgetItem(NULL, user, userListWidget);
-                    */
             }
             break;
 
             case comMessageToAll:
             {
                 QString message;
-                //QString username=users[client];
                 in >> message;
                 roomTextEdit->append(message);
-                //doSendMessageToAll(username+":"+message);
             }
             break;
 
             case comMessageToUsers:
             {
                 QString message;
-                //QString username=users[client];
                 in >> message;
                 roomTextEdit->append(message);
             }
             break;
-
-
         }
     qDebug() << "Command ended, bytes avaliable" <<socket->bytesAvailable();
     }
@@ -197,20 +189,11 @@ void MainWindow::readyRead()
 // server. (see the connect() call in the MainWindow constructor).
 void MainWindow::connected()
 {
-    //try autch
     QByteArray block;
-    QDataStream out(&block, QIODevice::WriteOnly);
-    out << (quint16)0;
-    out << (quint8)MainWindow::comAuthorization;
-    out << userLineEdit->text();
 
-    out.device()->seek(0);
-    out << (quint16)(block.size() - sizeof(quint16));
+    block=CreateDatagramm(comAuthorization,userLineEdit->text());
     socket->write(block);
+
     qDebug() <<"Block sended!"<< block;
-    // Flip over to the chat page:
 
-
-    // And send our username to the chat server.
-    //socket->write(QString("/me:" + userLineEdit->text() + "\n").toUtf8());
 }

@@ -292,5 +292,21 @@ border-radius: 25px;
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>MainWindow</sender>
+   <signal>destroyed(QObject*)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>429</x>
+     <y>299</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>429</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
 </ui>
