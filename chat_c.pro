@@ -17,10 +17,12 @@ TARGET = chat_c
 
 
 SOURCES += main.cpp \
-    MainWindow.cxx
+    MainWindow.cxx \
+    abstractchat.cpp
 
 HEADERS += \
-    MainWindow.h
+    MainWindow.h \
+    abstractchat.h
 
 FORMS += \
     MainWindow.ui

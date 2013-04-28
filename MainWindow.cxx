@@ -1,5 +1,5 @@
 #include "MainWindow.h"
-
+/*
 QByteArray MainWindow::CreateDatagramm(quint8 comm,QString message) const
 {
     QByteArray block;
@@ -31,7 +31,7 @@ void MainWindow::doSendCommand(quint8 comm, QTcpSocket *client) const
 {
 
 }
-
+*/
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
     QString ipAddress;

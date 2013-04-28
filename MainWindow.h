@@ -7,12 +7,13 @@
 // This is the include file that Qt generates for us from the
 // GUI we built in Designer  
 #include "ui_MainWindow.h"
+#include "abstractchat.h"
 
 /*
  * This is the MainWindow class that we have told to inherit from
  * our Designer MainWindow (ui::MainWindow)
  */
-class MainWindow : public QMainWindow, public Ui::MainWindow
+class MainWindow : public QMainWindow, public Ui::MainWindow, public abstractchat
 {
     Q_OBJECT
 
@@ -50,12 +51,12 @@ class MainWindow : public QMainWindow, public Ui::MainWindow
         QTcpSocket *socket;
         quint16 blocksize;
     protected:
-
+/*
         QByteArray CreateDatagramm(quint8 comm,QString message) const;
         QByteArray CreateDatagramm(quint8 comm) const;
 
         void doSendCommand(quint8 comm, QTcpSocket *client,QString message) const;
         void doSendCommand(quint8 comm, QTcpSocket *client) const;
-
+*/
 
 };
